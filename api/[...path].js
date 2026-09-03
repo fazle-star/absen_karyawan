@@ -26,7 +26,8 @@ const cleanSessions = async () => pool.query("UPDATE sessions SET check_out = ch
 export default async function handler(req, res) {
   try {
     await init();
-    const path = req.url.split('?')[0].replace(/^\/api\/?/, '');
+    const requestUrl = new URL(req.url, 'http://localhost');
+    const path = requestUrl.searchParams.get('path') || requestUrl.pathname.replace(/^\/api\/?/, '').replace(/\/index(?:\.js)?$/, '');
     const input = body(req);
     if (path === 'auth/login' && req.method === 'POST') {
       const result = await pool.query("SELECT * FROM users WHERE username = $1 AND status = 'Aktif'", [input.username]);
