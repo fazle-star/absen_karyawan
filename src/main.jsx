@@ -83,7 +83,7 @@ function Login({ onLogin }) {
   );
 }
 
-function Header({ user, onLogout }) {
+function Header({ user, onLogout, menuOpen, onToggleMenu }) {
   return (
     <header className="topbar">
       <div>
@@ -94,9 +94,7 @@ function Header({ user, onLogout }) {
       </div>
       <div className="user-menu">
         <span>{user.name}</span>
-        <button className="ghost" onClick={onLogout}>
-          Keluar
-        </button>
+        {user.role === "admin" ? <button className="ghost" onClick={onLogout}>Keluar</button> : <button className="hamburger header-hamburger" aria-label="Buka menu" onClick={onToggleMenu}>{menuOpen ? "×" : "☰"}</button>}
       </div>
     </header>
   );
@@ -221,6 +219,8 @@ function MemberDashboard({ user }) {
     <>
       <Header
         user={user}
+        menuOpen={menuOpen}
+        onToggleMenu={() => setMenuOpen(!menuOpen)}
         onLogout={() =>
           api("auth/logout", { method: "POST" }).then(() => location.reload())
         }
@@ -325,17 +325,12 @@ function MemberDashboard({ user }) {
           </section>
         )}
         {message && <p className="notice">{message}</p>}
-        <div className="mobile-member-nav">
-          <button className="hamburger" aria-label="Buka menu" onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? "×" : "☰"}
-          </button>
-          {menuOpen && <div className="mobile-menu">
+        {menuOpen && <div className="mobile-menu member-menu">
             <button onClick={() => selectTab("home")}>Ringkasan</button>
             <button onClick={loadHistory}>Riwayat absen</button>
             <button onClick={() => selectTab("profile")}>Profil</button>
             <button onClick={() => api("auth/logout", { method: "POST" }).then(() => location.reload())}>Keluar</button>
-          </div>}
-        </div>
+        </div>}
         <nav className="bottom-tabs desktop-member-nav">
           <button
             className={tab === "home" ? "selected" : ""}
