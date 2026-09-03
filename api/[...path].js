@@ -2,7 +2,9 @@ import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false });
+const databaseUrl = process.env.DATABASE_URL ? new URL(process.env.DATABASE_URL) : null;
+databaseUrl?.searchParams.delete('sslmode');
+const pool = new Pool({ connectionString: databaseUrl?.toString(), ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false });
 const secret = process.env.JWT_SECRET || 'change-this-secret-in-vercel';
 const branch = process.env.BRANCH_NAME || 'Condong Catur';
 
