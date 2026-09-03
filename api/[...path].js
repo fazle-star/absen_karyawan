@@ -34,9 +34,9 @@ export default async function handler(req, res) {
     if (path === 'auth/login' && req.method === 'POST') {
       const result = await pool.query("SELECT * FROM users WHERE username = $1 AND status = 'Aktif'", [input.username]);
       if (!result.rowCount || !(await bcrypt.compare(input.password || '', result.rows[0].password))) return send(res, 401, { ok: false, message: 'Username atau password salah.' });
-      const user = result.rows[0]; const token = jwt.sign({ id: user.id, role: user.role, name: user.name, member_no: user.member_no }, secret, { expiresIn: '7d' });
+      const user = result.rows[0]; const token = jwt.sign({ id: user.id, role: user.role, name: user.name, username: user.username, member_no: user.member_no }, secret, { expiresIn: '7d' });
       res.setHeader('Set-Cookie', `absen_token=${token}; HttpOnly; Path=/; SameSite=Lax; Max-Age=604800${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`);
-      return send(res, 200, { ok: true, user: { id: user.id, name: user.name, role: user.role, member_no: user.member_no } });
+      return send(res, 200, { ok: true, user: { id: user.id, name: user.name, username: user.username, role: user.role, member_no: user.member_no } });
     }
     if (path === 'auth/me' && req.method === 'GET') { const user = auth(req, res); return user ? send(res, 200, { ok: true, user }) : null; }
     if (path === 'auth/logout' && req.method === 'POST') { res.setHeader('Set-Cookie', 'absen_token=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax'); return send(res, 200, { ok: true }); }
