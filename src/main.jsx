@@ -488,7 +488,7 @@ function AdminDashboard({ user }) {
                 placeholder="Cari nama..."
               />
             </div>
-            <div className="list">
+            <div className="list attendance-list">
               {today.map((item) => (
                 <article className="history-row" key={item.session_id}>
                   <div>

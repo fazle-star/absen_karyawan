@@ -426,6 +426,20 @@ input:focus {
 .attendance-card {
   min-height: 330px;
 }
+.attendance-list {
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #aebdb3 transparent;
+}
+.attendance-list::-webkit-scrollbar {
+  width: 7px;
+}
+.attendance-list::-webkit-scrollbar-thumb {
+  background: #aebdb3;
+  border-radius: 10px;
+}
 .loading {
   min-height: 100vh;
   display: grid;
