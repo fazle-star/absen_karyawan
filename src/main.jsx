@@ -100,11 +100,31 @@ function Header({ user, onLogout, menuOpen, onToggleMenu }) {
   );
 }
 
+function ErrorModal({ message, onClose }) {
+  const [closing, setClosing] = useState(false);
+  if (!message) return null;
+  const close = () => {
+    setClosing(true);
+    window.setTimeout(onClose, 180);
+  };
+  return (
+    <div className={`error-modal-backdrop ${closing ? "closing" : ""}`} role="alertdialog" aria-modal="true" aria-label="Notifikasi error">
+      <div className="error-modal">
+        <div className="error-modal-icon">!</div>
+        <h2>Presensi tidak berhasil</h2>
+        <p>{message}</p>
+        <button className="dark-button" onClick={close}>Oke</button>
+      </div>
+    </div>
+  );
+}
+
 function MemberDashboard({ user }) {
   const [status, setStatus] = useState(null);
   const [code, setCode] = useState("");
   const [history, setHistory] = useState([]);
   const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [tab, setTab] = useState("home");
   const [menuOpen, setMenuOpen] = useState(false);
   const [scanning, setScanning] = useState(false);
@@ -115,7 +135,7 @@ function MemberDashboard({ user }) {
       const data = await api("member/status");
       setStatus(data);
     } catch (err) {
-      setMessage(err.message);
+      setErrorMessage(err.message);
     }
   };
   useEffect(() => {
@@ -151,7 +171,7 @@ function MemberDashboard({ user }) {
       setCode("");
       refresh();
     } catch (err) {
-      setMessage(err.message);
+      setErrorMessage(err.message);
     }
   };
   const checkout = async () => {
@@ -160,7 +180,7 @@ function MemberDashboard({ user }) {
       setMessage(`${data.message} Durasi ${data.duration_text}.`);
       refresh();
     } catch (err) {
-      setMessage(err.message);
+      setErrorMessage(err.message);
     }
   };
   const loadHistory = async () => {
@@ -170,7 +190,7 @@ function MemberDashboard({ user }) {
       const data = await api("member/history");
       setHistory(data.history);
     } catch (err) {
-      setMessage(err.message);
+      setErrorMessage(err.message);
     }
   };
   const selectTab = (nextTab) => {
@@ -202,7 +222,7 @@ function MemberDashboard({ user }) {
       );
       setScanning(true);
     } catch {
-      setMessage(
+      setErrorMessage(
         "Kamera tidak dapat diakses. Izinkan akses kamera pada browser.",
       );
     }
@@ -353,6 +373,7 @@ function MemberDashboard({ user }) {
           <span>{user.member_no}</span>
         </nav>
       </main>
+      <ErrorModal message={errorMessage} onClose={() => setErrorMessage("")} />
     </>
   );
 }
